@@ -18,5 +18,4 @@
 ## Funkcionalita (ESSENTIALS – navíc)
 - **Proxy režim:**  
   - Příkazy `AD`, `AW`, `AB` s cizí IP adresou se přepošlou na vzdálený node
-  - Node funguje jako klient i server zároveň
   - Odpověď vzdálené banky je vrácena původnímu volajícímu
