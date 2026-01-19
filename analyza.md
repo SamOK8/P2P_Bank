@@ -1,6 +1,5 @@
-## Architektura
-- **Typ aplikace:** Konzolová TCP server aplikace  
-- **Vzorec:** P2P (každý node = jedna banka)  
+## Architektura  
+- P2P (každý node = jedna banka)  
 - **Port:** konfigurovatelný v rozsahu 65525–65535  
 - **Identifikace banky:** IP adresa stroje  
 - **Přístup:** telnet / PuTTY (ruční posílání příkazů)
