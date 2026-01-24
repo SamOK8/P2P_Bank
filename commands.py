@@ -12,9 +12,7 @@ class AC:
         self.dbc = dbc
 
     def execute(self):
-        account_number = self.dbc.load_db()["lastAc"] + 1
-
-        self.dbc.add_account(account_number, 0)
+        account_number = self.dbc.add_account()
         return "AC" + str(account_number) + "/" # + ip address
 
 

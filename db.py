@@ -12,19 +12,28 @@ class database_controller:
             json.dump(data, db, indent=2)
 
 
-    def add_account(self, account_number, balance):
+    def add_account(self):
         data = self.load_db()
         print(data)
+        account_number = data["lastAc"] + 1
+
+        if account_number < 10000:
+            account_number = 10000
+        if account_number > 99999:
+            raise ValueError("account limit reached")
+
         for acc in data["accounts"]:
             if acc["accountNumber"] == account_number:
                 raise ValueError("account already exists")
 
         data["accounts"].append({
                 "accountNumber": account_number,
-                "balance": balance
+                "balance": 0
             })
 
+        data["lastAc"] = account_number
         self.save_db(data)
+        return account_number
 
 
 
