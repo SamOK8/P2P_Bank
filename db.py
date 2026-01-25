@@ -35,13 +35,20 @@ class database_controller:
         self.save_db(data)
         return account_number
 
-
+    def del_account(self, account_number):
+        data = self.load_db()
+        data["accounts"].pop(self.get_account_index(data, account_number))
+        self.save_db(data)
 
     def get_account_index(self, data, account_number):
         for i, acc in enumerate(data["accounts"]):
             if acc["accountNumber"] == account_number:
                 return i
         raise ValueError("account does not exist")
+
+    def get_balance(self, account_number):
+        data = self.load_db()
+        return int(data["accounts"][self.get_account_index(data, account_number)]["balance"])
 
     def acc_deposit(self, account_number, amount):
         data = self.load_db()
