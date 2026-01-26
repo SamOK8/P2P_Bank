@@ -1,0 +1,12 @@
+{
+  "bank": {
+    "ip": ""
+  },
+  "accounts": [
+    {
+      "accountNumber": 0,
+      "balance": 0
+    }
+  ],
+  "lastAc": 0
+}
