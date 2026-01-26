@@ -77,3 +77,16 @@ class database_controller:
 
             self.save_db(data)
 
+    def get_total_amount(self):
+        data = self.load_db()
+        total = 0
+        for acc in data["accounts"]:
+            total += acc["balance"]
+        return total
+
+    def get_number_of_accounts(self):
+        data = self.load_db()
+        return len(data["accounts"])
+
+
+

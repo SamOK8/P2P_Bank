@@ -51,6 +51,11 @@ class service:
             else:
                 return AR(self.dbc).execute(account)
 
+        if command_string == "BA":
+            return BA(self.dbc).execute()
+        if command_string == "BN":
+            return BN(self.dbc).execute()
+
         raise ValueError("Invalid command")
 
 

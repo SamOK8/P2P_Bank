@@ -58,7 +58,8 @@ class BA:
         self.dbc = dbc
 
     def execute(self):
-        print()
+        total = self.dbc.get_total_amount()
+        return "BA " + str(total)
 
 
 class BN:
@@ -66,4 +67,5 @@ class BN:
         self.dbc = dbc
 
     def execute(self):
-        print()
+        count = self.dbc.get_number_of_accounts()
+        return "BN " + str(count)
