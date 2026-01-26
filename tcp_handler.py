@@ -1,11 +1,19 @@
+from logger import log
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
+
+executor = ThreadPoolExecutor(max_workers=10)
+
 class TCPHandler:
     def __init__(self, client_socket, address, server):
         self.client_socket = client_socket
         self.address = address
+        self.client_ip = address[0]
+        self.client_port = address[1]
         self.server = server
 
     def handle(self):
         print(f"[+] Připojen {self.address}")
+        log(f"CONNECT | {self.client_ip}:{self.client_port}")
 
         try:
             while True:
@@ -19,16 +27,33 @@ class TCPHandler:
                 if not command:
                     continue
 
-                try:
-                    response = self.server.handle_command(command)
-                except Exception as e:
-                    response = f"ER {type(e).__name__}: {e}"
+                log(f"IN  | {self.client_ip}:{self.client_port} | {command}")
 
-                self.client_socket.sendall((response + "\n").encode("utf-8"))
+                try:
+                    future = executor.submit(
+                        self.server.handle_command,
+                        command
+                    )
+                    response = future.result(timeout=5)
+
+                except TimeoutError:
+                    response = "ER Timeout"
+                    log(f"ERROR | {self.client_ip}:{self.client_port} | {response}")
+
+                except Exception as e:
+                    response = f"ER {e}"
+                    log(f"ERROR | {self.client_ip}:{self.client_port} | {response}")
+
+
+
+                log(f"OUT | {self.client_ip}:{self.client_port} | {response}")
+                self.client_socket.sendall((response + "\r\n").encode("utf-8"))
 
         except Exception as e:
+            log(f"ERROR | {self.client_ip}:{self.client_port} | {e}")
             print(f"[!] Chyba {self.address}: {e}")
 
         finally:
             self.client_socket.close()
+            log(f"DISCONNECT | {self.client_ip}:{self.client_port}")
             print(f"[-] Odpojen {self.address}")

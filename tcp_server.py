@@ -1,6 +1,5 @@
 import multiprocessing
 import socket
-import threading
 import random
 from tcp_handler import TCPHandler
 from service import service
@@ -37,7 +36,11 @@ class TCPServer:
         while self.is_running:
             client_socket, address = self.server_socket.accept()
             handler = TCPHandler(client_socket, address, self)
-            threading.Thread(target=handler.handle, daemon=True).start()
+            p = multiprocessing.Process(
+                target=handler.handle,
+                daemon=True
+            )
+            p.start()
 
     def stop(self):
         self.is_running = False
