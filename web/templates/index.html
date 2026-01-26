@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>P2P Bank Node</title>
+    <style>
+        body {
+            background: #0f172a;
+            color: #e5e7eb;
+            font-family: monospace;
+            padding: 20px;
+        }
+        h1 { color: #38bdf8; }
+        .box {
+            background: #020617;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        pre {
+            background: black;
+            padding: 10px;
+            overflow-y: scroll;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🏦 P2P Bank Node</h1>
+
+<div class="box">
+    <strong>IP banky:</strong> {{ bank_ip }}<br>
+    <strong>TCP port:</strong> {{ bank_port }}
+</div>
+
+<div class="box">
+    <h3>📜 Logy</h3>
+    <pre>{{ logs }}</pre>
+</div>
+
+</body>
+</html>
