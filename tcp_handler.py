@@ -1,12 +1,11 @@
-
 class TCPHandler:
-    def __init__(self, client_socket, address, command_handler):
+    def __init__(self, client_socket, address, server):
         self.client_socket = client_socket
         self.address = address
-        self.command_handler = command_handler
+        self.server = server
 
     def handle(self):
-        print(f"[+] Připojen klient {self.address}")
+        print(f"[+] Připojen {self.address}")
 
         try:
             while True:
@@ -14,10 +13,17 @@ class TCPHandler:
                 if not data:
                     break
 
-                message = data.decode("utf-8").strip()
-                print(f"[{self.address}] {message}")
+                command = data.decode("utf-8").strip()
+                print(f"[{self.address}] CMD = {repr(command)}")
 
-                response = self.command_handler.handle(message)
+                if not command:
+                    continue
+
+                try:
+                    response = self.server.handle_command(command)
+                except Exception as e:
+                    response = f"ER {type(e).__name__}: {e}"
+
                 self.client_socket.sendall((response + "\n").encode("utf-8"))
 
         except Exception as e:
@@ -25,4 +31,4 @@ class TCPHandler:
 
         finally:
             self.client_socket.close()
-            print(f"[-] Odpojen klient {self.address}")
+            print(f"[-] Odpojen {self.address}")

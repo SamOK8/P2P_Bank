@@ -55,7 +55,7 @@ class service:
 
 
 
-test = service()
+#test = service()
 # print(test.command_handler("AC"))
 # print(test.command_handler("AD 10001/192.168.1.22 20"))
 # print(test.command_handler("AB 10001/192.168.1.22"))

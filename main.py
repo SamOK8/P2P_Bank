@@ -27,7 +27,7 @@ def main():
     ip = get_local_ip()
     port = find_free_port()
 
-    tcp_server = TCPServer(ip, port)
+    tcp_server = TCPServer(ip)
 
     # TCP server v threadu
     tcp_thread = threading.Thread(target=tcp_server.start, daemon=True)
