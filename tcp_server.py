@@ -13,6 +13,7 @@ class TCPServer:
         self.lock = multiprocessing.Lock()
         self.service = service(ip_address=self.host, lock=self.lock)
         self.is_running = False
+        self.peers = {}
 
     def _bind_random_port(self):
         for _ in range(20):
@@ -72,9 +73,36 @@ class TCPServer:
 
         return self.forward_to_peer(target_ip, command)
 
-    def _forward_to_peer(self, command: str) -> str:
+    def forward_to_peer(self,target_ip, command: str) -> str:
         try:
-            ip = command.split("/")[1].split()[0]
-            return self.send_command(ip, self.port, command)
+
+            if target_ip not in self.peers:
+                port = self.discover_peer_port(target_ip)
+                if port is None:
+                    return "ER Peer bank not reachable"
+
+                self.peers[target_ip] = port
+
+            return self.send_command(target_ip, self.peers[target_ip], command)
         except Exception as e:
             return f"ER forwarding failed: {e}"
+
+    def discover_peer_port(self, ip, timeout=0.3):
+        """
+        Prohledá porty 65525–65535 a najde bank node
+        """
+        for port in range(65525, 65536):
+            try:
+                with socket.create_connection((ip, port), timeout=timeout) as sock:
+                    sock.sendall(b"BC\n")
+                    resp = sock.recv(1024).decode("utf-8").strip()
+
+                    if resp.startswith("BC"):
+                        print(f"[DISCOVER] Bank nalezena {ip}:{port}")
+                        return port
+
+            except (socket.timeout, ConnectionRefusedError, OSError):
+                continue
+
+        return None
+
