@@ -1,0 +1,77 @@
+import multiprocessing
+import socket
+import threading
+import random
+from tcp_handler import TCPHandler
+from service import service
+
+
+class TCPServer:
+    def __init__(self, host="0.0.0.0"):
+        self.host = host
+        self.port = self._bind_random_port()
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.lock = multiprocessing.Lock()
+        self.service = service(ip_address=self.host, lock=self.lock)
+        self.is_running = False
+
+    def _bind_random_port(self):
+        for _ in range(20):
+            port = random.randint(65525, 65535)
+            try:
+                test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                test_socket.bind(("0.0.0.0", port))
+                test_socket.close()
+                return port
+            except OSError:
+                continue
+        raise RuntimeError("Nelze najít volný port")
+
+    def start(self):
+        self.server_socket.bind((self.host, self.port))
+        self.server_socket.listen()
+        self.is_running = True
+
+        print(f"[+] Bank node běží na {self.host}:{self.port}")
+
+        while self.is_running:
+            client_socket, address = self.server_socket.accept()
+            handler = TCPHandler(client_socket, address, self)
+            threading.Thread(target=handler.handle, daemon=True).start()
+
+    def stop(self):
+        self.is_running = False
+        self.server_socket.close()
+
+
+    def send_command(self, ip, port, command, timeout=5):
+        try:
+            with socket.create_connection((ip, port), timeout=timeout) as sock:
+                sock.sendall((command + "\n").encode("utf-8"))
+                return sock.recv(4096).decode("utf-8").strip()
+        except Exception as e:
+            return f"ER {e}"
+
+    def handle_command(self, command: str) -> str:
+        command = command.strip()
+
+        if "/" not in command:
+            return self.service.command_handler(command)
+
+        try:
+            account_part = command.split()[1]
+            target_ip = account_part.split("/")[1]
+        except IndexError:
+            return "ER invalid command format"
+
+        if target_ip == self.host:
+            return self.service.command_handler(command)
+
+        return self.forward_to_peer(target_ip, command)
+
+    def _forward_to_peer(self, command: str) -> str:
+        try:
+            ip = command.split("/")[1].split()[0]
+            return self.send_command(ip, self.port, command)
+        except Exception as e:
+            return f"ER forwarding failed: {e}"
