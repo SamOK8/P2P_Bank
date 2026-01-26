@@ -1,3 +1,4 @@
+import multiprocessing
 import re
 from re import findall, search, split
 from db import database_controller
@@ -55,7 +56,7 @@ class service:
 
 
 
-# test = service()
+# test = service(multiprocessing.Lock, "192.168.1.20")
 # print(test.command_handler("BC"))
 # print(test.command_handler("AC"))
 # print(test.command_handler("AD 10001/192.168.1.22 20"))
