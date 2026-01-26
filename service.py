@@ -24,10 +24,10 @@ class service:
         )
 
         if command_string == "BC":
-            return BC(self.dbc).execute()
+            return BC(self.dbc).execute(self.server_ip)
 
         if command_string == "AC":
-            return AC(self.dbc).execute()
+            return AC(self.dbc).execute(self.server_ip)
 
         AD_AW = AD_AW_REGEX.match(command_string)
         if AD_AW:
@@ -55,7 +55,8 @@ class service:
 
 
 
-test = service()
+# test = service()
+# print(test.command_handler("BC"))
 # print(test.command_handler("AC"))
 # print(test.command_handler("AD 10001/192.168.1.22 20"))
 # print(test.command_handler("AB 10001/192.168.1.22"))
