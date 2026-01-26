@@ -6,8 +6,9 @@ from commands import BC, AC, AD, AW, AB, AR, BA, BN
 
 
 class service:
-    def __init__(self):
-        self.dbc = database_controller()
+    def __init__(self, lock, ip_address):
+        self.dbc = database_controller(lock)
+        self.server_ip = ip_address
 
 
 
